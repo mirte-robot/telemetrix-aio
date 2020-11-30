@@ -43,6 +43,9 @@ class PrivateConstants:
     ENABLE_ALL_REPORTS = 17
     RESET = 18
 
+    # Custom rotary encoder support
+    ENCODER_NEW = 18
+
     # reports
     # debug data from Arduino
     DIGITAL_REPORT = DIGITAL_WRITE
@@ -55,6 +58,8 @@ class PrivateConstants:
     I2C_READ_REPORT = 10
     SONAR_DISTANCE = 11
     DHT_REPORT = 12
+
+    ENCODER_REPORT = 13
 
     DEBUG_PRINT = 99
 
@@ -92,3 +97,6 @@ class PrivateConstants:
     # DHT Report sub-types
     DHT_DATA = 0
     DHT_ERROR = 1
+
+    # maximum number of Optical Encoder devices allowed
+    MAX_ENCODERS = 4
