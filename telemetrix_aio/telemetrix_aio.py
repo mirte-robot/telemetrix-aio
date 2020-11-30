@@ -777,7 +777,7 @@ class TelemetrixAIO:
             self.encoder_callbacks[encoder_pin] = callback
             self.encoder_count += 1
 
-            command = PrivateConstants.ENCODER_NEW, encoder_pin, interrupt_mode, wheel_size]
+            command = [PrivateConstants.ENCODER_NEW, encoder_pin, interrupt_mode, wheel_size]
             await self._send_command(command)
 
         else:
@@ -1149,7 +1149,7 @@ class TelemetrixAIO:
 
         await cb(cb_list)
 
-    asynch def _encoder_report(self, data):
+    async def _encoder_report(self, data):
         """
         This is a private message handler for encoder data
 
