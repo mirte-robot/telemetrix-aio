@@ -130,6 +130,10 @@ class TelemetrixAIO:
 
         self.dht_count = 0
 
+        # custom encoder support
+        self.encoder_callbacks = {}
+        self.encoder_count = 0
+
         # serial port in use
         self.serial_port = None
 
@@ -152,6 +156,7 @@ class TelemetrixAIO:
         self.report_dispatch.update({PrivateConstants.I2C_TOO_MANY_BYTES_RCVD: self._i2c_too_many})
         self.report_dispatch.update({PrivateConstants.SONAR_DISTANCE: self._sonar_distance_report})
         self.report_dispatch.update({PrivateConstants.DHT_REPORT: self._dht_report})
+        self.report_dispatch.update({PrivateConstants.ENCODER_REPORT: self._encoder_report})
 
         print(f'TelemetrixAIO Version: {PrivateConstants.TELEMETRIX_AIO_VERSION}')
         print(f'Copyright (c) 2018-2020 Alan Yorinks All rights reserved.\n')
@@ -740,6 +745,42 @@ class TelemetrixAIO:
                 await self.shutdown()
             raise RuntimeError(f'Maximum Number Of Sonars Exceeded - set_pin_mode_sonar fails for pin {trigger_pin}')
 
+    async def set_pin_mode_encoder(self, encoder_pin, interrupt_mode=2, wheel_size=20, callback=None):
+        """
+        This is a custom FirmataExpress feature
+        Configure Optical Encoder prior to operation.
+        UP to a maximum of 4 Optical Encoders is supported
+        If the maximum is exceeded a message is sent to the console and the is ignored.
+
+        :param encoder_pin: The pin number to which the optical encoder is connected.
+
+        :param interrupt_mode: a tuning parameter. Specifies the interrupt mode (RISING,FALLING,CHANGE).
+
+        :param wheel_size: a tuning parameter. Specifies the number of gaps in the encoder wheel disk.
+
+        :param callback: optional callback function to report encoder data changes
+
+        callback receives a data list:
+        [pin_type, pin_number, encoder_value (in ticks), raw_time_stamp]
+        """
+
+        if not callback:
+            if self.shutdown_on_exception:
+                await self.shutdown()
+            raise RunTimeError('set_pin_mode_encoder: A callback must be specified')
+
+        if self.encoder_count < PrivateConstants.MAX_ENCODERS -1:
+            self.encoder_callbacks[encoder_pin] = callback
+            self.encoder_count += 1
+
+            command = PrivateConstants.ENCODER_NEW, encoder_pin, interrupt_mode, wheel_size]
+            await self._send_command(command)
+
+        else:
+            if self.shutdown_on_exception:
+                await self.shutdown()
+            raise RunTimeError(f'Maximum number of encoders exceeded - set_pin_mode_encoder fails for pin {encoder_pin}' )
+
     async def _set_pin_mode(self, pin_number, pin_state, differential, callback):
         """
         A private method to set the various pin modes.
@@ -1103,6 +1144,32 @@ class TelemetrixAIO:
                    ((report[1] << 8) + report[2]), time.time()]
 
         await cb(cb_list)
+
+    asynch def _encoder_report(self, data):
+        """
+        This is a private message handler for encoder data
+
+        :param data:    data[0] = pin number
+
+                        data[1] = encoder ticks high order byte or error value if DHT_ERROR
+
+                        data[2] = encoder ticks byte 2
+
+                        data[3] = encoder ticks byte 3
+
+                        data[4] = encoder ticks byte 4
+
+        callback report format: [PrivateConstants.ENCODER_REPORT, encoder_pin, encoder data, time_stamp]
+        """
+        cb = self.encoder_callbacks[data[0]]
+
+        # convert byte data back to long
+        f_humidity = bytearray(data[1:])
+        message = [PrivateConstants.ENCODER_REPORT, data[0],
+                   (struct.unpack('<l', f_humidity))[0],
+                   time.time()]
+
+        await cb(message)
 
     async def _send_command(self, command):
         """
