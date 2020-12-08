@@ -259,7 +259,7 @@ class TelemetrixAIO:
                 continue
             print('\nChecking {}'.format(port.device))
             try:
-                self.serial_port = TelemetrixAioSerial(port.device, 115200,
+                self.serial_port = TelemetrixAioSerial(port.device, 1000000,
                                                        telemetrix_aio_instance=self,
                                                        close_loop_on_error=self.close_loop_on_shutdown)
             except SerialException:
@@ -306,7 +306,7 @@ class TelemetrixAIO:
         """
         # if port is not found, a serial exception will be thrown
         print('Opening {} ...'.format(self.com_port))
-        self.serial_port = TelemetrixAioSerial(self.com_port, 115200,
+        self.serial_port = TelemetrixAioSerial(self.com_port, 1000000,
                                                telemetrix_aio_instance=self,
                                                close_loop_on_error=self.close_loop_on_shutdown)
 
