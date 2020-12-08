@@ -1026,7 +1026,7 @@ void setup()
     }
     // initialize the servo allocation map table
 
-    Serial.begin(115200);
+    Serial.begin(1000000);
 }
 
 void loop()

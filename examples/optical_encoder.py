@@ -8,7 +8,7 @@ This program continuously monitors an optical encoder Sensor
 It reports changes of the wheel orientation.
 """
 
-ENCODER_PIN = 16
+ENCODER_PIN = 15
 INTERRUPT_MODE = 2
 WHEEL_GAPS = 20
 
