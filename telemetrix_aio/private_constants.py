@@ -46,6 +46,9 @@ class PrivateConstants:
     # Custom rotary encoder support
     ENCODER_NEW = 18
 
+    # Custom rotary encoder support
+    ENCODER_NEW = 18
+
     # reports
     # debug data from Arduino
     DIGITAL_REPORT = DIGITAL_WRITE
