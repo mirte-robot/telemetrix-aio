@@ -44,10 +44,7 @@ class PrivateConstants:
     RESET = 18
 
     # Custom rotary encoder support
-    ENCODER_NEW = 18
-
-    # Custom rotary encoder support
-    ENCODER_NEW = 18
+    ENCODER_NEW = 19
 
     # reports
     # debug data from Arduino
