@@ -773,7 +773,7 @@ class TelemetrixAIO:
                 await self.shutdown()
             raise RunTimeError('set_pin_mode_encoder: A callback must be specified')
 
-        if self.encoder_count < PrivateConstants.MAX_ENCODERS -1:
+        if self.encoder_count < PrivateConstants.MAX_ENCODERS:
             self.encoder_callbacks[encoder_pin] = callback
             self.encoder_count += 1
 
