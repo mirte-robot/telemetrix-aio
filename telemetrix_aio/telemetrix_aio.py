@@ -754,7 +754,7 @@ class TelemetrixAIO:
         This is a custom FirmataExpress feature
         Configure Optical Encoder prior to operation.
         UP to a maximum of 4 Optical Encoders is supported
-        If the maximum is exceeded a message is sent to the console and the is ignored.
+        If the maximum is exceeded an exception is raised and the system is shut down.
 
         :param encoder_pin: The pin number to which the optical encoder is connected.
 
@@ -762,7 +762,7 @@ class TelemetrixAIO:
 
         :param wheel_size: a tuning parameter. Specifies the number of gaps in the encoder wheel disk.
 
-        :param callback: optional callback function to report encoder data changes
+        :param callback: callback function to report encoder data changes
 
         callback receives a data list:
         [pin_type, pin_number, encoder_value (in ticks), raw_time_stamp]
@@ -1155,7 +1155,7 @@ class TelemetrixAIO:
 
         :param data:    data[0] = pin number
 
-                        data[1] = encoder ticks high order byte or error value if DHT_ERROR
+                        data[1] = encoder ticks high order byte
 
                         data[2] = encoder ticks byte 2
 
@@ -1168,9 +1168,9 @@ class TelemetrixAIO:
         cb = self.encoder_callbacks[data[0]]
 
         # convert byte data back to long
-        f_humidity = bytearray(data[1:])
+        l_encoder = bytearray(data[1:])
         message = [PrivateConstants.ENCODER_REPORT, data[0],
-                   (struct.unpack('<l', f_humidity))[0],
+                   (struct.unpack('<l', l_encoder))[0],
                    time.time()]
 
         await cb(message)
