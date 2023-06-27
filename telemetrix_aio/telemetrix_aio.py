@@ -738,7 +738,7 @@ class TelemetrixAIO:
                 await self.shutdown()
             raise RuntimeError('set_pin_mode_sonar: A Callback must be specified')
 
-        if self.sonar_count < PrivateConstants.MAX_SONARS - 1:
+        if self.sonar_count < PrivateConstants.MAX_SONARS:
             self.sonar_callbacks[trigger_pin] = callback
             self.sonar_count += 1
 
